@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Scanner;
 
 public class TeoriaGrafos {
@@ -37,7 +39,12 @@ public class TeoriaGrafos {
         } else {
             System.out.println("Acíclico");
         }
-        //converterParaListaAdjacencia(matriz);
+        
+        List<List<Integer>> listaAdjacencia = converterParaListaAdjacencia(matriz);
+        System.out.println("Lista de Adjacências:");
+        for (int i = 0; i < listaAdjacencia.size(); i++) {
+            System.out.println(i + ": " + listaAdjacencia.get(i));
+        }
         
         scanner.close();
     }
@@ -78,23 +85,33 @@ public class TeoriaGrafos {
         // DICA: Inicie uma travessia (Busca em Largura - BFS ou Busca em Profundidade - DFS) 
         // a partir do vértice 0. Mantenha um array boolean[] visitados.
         // No final da busca, se houver algum vértice 'false' no array, ele é desconexo.
-        for (int i = 0; i < matriz.length; i++) {
-            // Inicie uma busca a partir do vértice 'i' e marque os visitados
-            boolean[] visitados = new boolean[matriz.length];
-            visitados[i] = true;
+        if (matriz.length == 0) return true;
+        
+        boolean[] visitados = new boolean[matriz.length];
+        Queue<Integer> fila = new LinkedList<>();
+        
+        // Começamos a busca pelo vértice 0
+        fila.add(0);
+        visitados[0] = true;
+        
+        // Busca em Largura (BFS)
+        while (!fila.isEmpty()) {
+            int atual = fila.poll(); // Tira o primeiro da fila
             for (int j = 0; j < matriz.length; j++) {
-                if (matriz[i][j] == 1 && !visitados[j]) {
+                if (matriz[atual][j] > 0 && !visitados[j]) { // Se tem aresta e ainda não visitou
                     visitados[j] = true;
+                    fila.add(j); // Coloca o vizinho na fila para visitar os vizinhos dele depois
                 }
             }
-            // Se após a busca houver algum vértice não visitado, retorne false
-            for (boolean visitado : visitados) {
-                if (!visitado) {
-                    return false;
-                }
-            }   
         }
-        return true; 
+        
+        // Verifica se alguém ficou sem ser visitado
+        for (boolean visitado : visitados) {
+            if (!visitado) {
+                return false; // Se achou um 'false', é desconexo
+            }
+        }
+        return true; // Se todo mundo for 'true', é conexo
     }
 
     // e) O grafo é cíclico ou acíclico?
@@ -115,7 +132,7 @@ public class TeoriaGrafos {
     private static boolean dfsCiclico(int[][] matriz, int vertice, boolean[] visitados, int pai, boolean direcionado) {
         visitados[vertice] = true;
         for (int j = 0; j < matriz.length; j++) {
-            if (matriz[vertice][j] == 1) { // Existe uma aresta
+            if (matriz[vertice][j] > 0) { // Existe uma aresta (padronizado para > 0)
                 if (!visitados[j]) {
                     if (dfsCiclico(matriz, j, visitados, vertice, direcionado)) {
                         return true; // Encontrou um ciclo na recursão
@@ -132,6 +149,15 @@ public class TeoriaGrafos {
     public static List<List<Integer>> converterParaListaAdjacencia(int[][] matriz) {
         // DICA: Crie uma List<List<Integer>>. Para cada linha 'i', crie uma nova lista.
         // Adicione nela todos os índices 'j' onde matriz[i][j] == 1.
-        return new ArrayList<>();
+        List<List<Integer>> listaAdjacencia = new ArrayList<>();
+        for (int i = 0; i < matriz.length; i++) {
+            listaAdjacencia.add(new ArrayList<>());
+            for (int j = 0; j < matriz[i].length; j++) {
+                if (matriz[i][j] > 0) { // Padronizado para > 0
+                    listaAdjacencia.get(i).add(j);
+                }
+            }
+        }
+        return listaAdjacencia;
     }
 }
