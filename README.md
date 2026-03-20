@@ -42,3 +42,8 @@ Dado um array de `intervals` onde `intervals[i] = [start_i, end_i]`, funda todos
 **Arquivos:**
 - `MergeIntervalsSolution.java`: Implementação ordenando os intervalos pelo início.
 - `MergeIntervalsMain.java`: Execução e testes locais.
+
+
+
+
+![alt text](image.png)
