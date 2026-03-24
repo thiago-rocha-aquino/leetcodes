@@ -1,3 +1,5 @@
+//escreva um programa que receba como entrada uma matriz de adjacências de um grafo simples,
+//  poderando e conexo e escreva como saida as arestas(na forma de pares ordenados e seus pesos)
 import java.util.*;
 public class TeoriaGrafos3 {
     public static void main(String[]args){
