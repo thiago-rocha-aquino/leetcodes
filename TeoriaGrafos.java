@@ -34,6 +34,8 @@ public class TeoriaGrafos {
         } else {
             System.out.println("Desconexo");
         }
+        imprimirGraus(matriz, ehDirecionado(matriz));
+
         if (ehCiclico(matriz, ehDirecionado(matriz))) {
             System.out.println("Cíclico");
         } else {
@@ -55,7 +57,7 @@ public class TeoriaGrafos {
         // Se matriz[i][j] for maior que 0 (ou igual a 1), imprima que existe aresta de 'i' para 'j'.
         for (int i = 0; i < matriz.length; i++) {
             for (int j = 0; j < matriz[i].length; j++) {
-                if (matriz[i][j] > 0) {
+                if (matriz[i][j] > 0 ) { // Evita imprimir laços (arestas de um vértice para ele mesmo)
                     System.out.println("Aresta de " + i + " para " + j);
                 }
             }
@@ -79,8 +81,26 @@ public class TeoriaGrafos {
         return false; // É não-direcionado
 
     }
+    // c) Qual é o grau de cada vértice?
+    public static void imprimirGraus(int[][] matriz, boolean direcionado) {
+        System.out.println("Graus dos vértices:");
+        for (int i = 0; i < matriz.length; i++) {
+            int grauSaida = 0;
+            int grauEntrada = 0;
+            for (int j = 0; j < matriz.length; j++) {
+                if (matriz[i][j] > 0) grauSaida++; // Conta a linha
+                if (matriz[j][i] > 0) grauEntrada++; // Conta a coluna
+            }
+            if (direcionado) {
+                System.out.println("Vértice " + i + " -> Grau de Saída: " + grauSaida + ", Grau de Entrada: " + grauEntrada);
+            } else {
+                // Em grafo não-direcionado, grau de entrada = grau de saída, então usamos só um.
+                System.out.println("Vértice " + i + " -> Grau: " + grauSaida);
+            }
+        }
+    }
 
-    // c) É conexo ou desconexo?
+    // d) É conexo ou desconexo?
     public static boolean ehConexo(int[][] matriz) {
         // DICA: Inicie uma travessia (Busca em Largura - BFS ou Busca em Profundidade - DFS) 
         // a partir do vértice 0. Mantenha um array boolean[] visitados.
@@ -115,34 +135,42 @@ public class TeoriaGrafos {
     }
 
     // e) O grafo é cíclico ou acíclico?
+    // Código corrigido para ehCiclico
     public static boolean ehCiclico(int[][] matriz, boolean direcionado) {
-        // DICA: Faça uma busca DFS. 
-        // - Se não for direcionado: Se visitar um nó que já foi visitado e ele NÃO é o "pai" atual, tem ciclo.
-        // - Se for direcionado: Precisa manter controle se o nó está na pilha de recursão atual (visitando).
-        for (int i = 0; i < matriz.length; i++) {
-            boolean[] visitados = new boolean[matriz.length];
-            if (dfsCiclico(matriz, i, visitados, -1, direcionado)) {
-                return true; // Encontrou um ciclo
-            }
-        }
-        return false; // Não encontrou um ciclo
-    
-    }
+        boolean[] visitados = new boolean[matriz.length];
+        boolean[] pilhaRecursao = new boolean[matriz.length]; // Necessário para grafos direcionados
 
-    private static boolean dfsCiclico(int[][] matriz, int vertice, boolean[] visitados, int pai, boolean direcionado) {
-        visitados[vertice] = true;
-        for (int j = 0; j < matriz.length; j++) {
-            if (matriz[vertice][j] > 0) { // Existe uma aresta (padronizado para > 0)
-                if (!visitados[j]) {
-                    if (dfsCiclico(matriz, j, visitados, vertice, direcionado)) {
-                        return true; // Encontrou um ciclo na recursão
-                    }
-                } else if (direcionado || j != pai) {
-                    return true; // Encontrou um ciclo
+        for (int i = 0; i < matriz.length; i++) {
+            if (!visitados[i]) {
+                if (dfsCiclico(matriz, i, visitados, pilhaRecursao, -1, direcionado)) {
+                    return true;
                 }
             }
         }
-        return false; // Não encontrou um ciclo
+        return false;
+    }
+
+    private static boolean dfsCiclico(int[][] matriz, int vertice, boolean[] visitados, boolean[] pilhaRecursao, int pai, boolean direcionado) {
+        visitados[vertice] = true;
+        pilhaRecursao[vertice] = true;
+
+        for (int j = 0; j < matriz.length; j++) {
+            if (matriz[vertice][j] > 0) { 
+                if (!visitados[j]) {
+                    if (dfsCiclico(matriz, j, visitados, pilhaRecursao, vertice, direcionado)) {
+                        return true;
+                    }
+                } else if (direcionado) {
+                    // Para dígrafos: só é ciclo se o vizinho já visitado estiver na pilha atual
+                    if (pilhaRecursao[j]) return true;
+                } else {
+                    // Para não-direcionados: é ciclo se o vizinho já foi visitado e não é o pai imediato
+                    if (j != pai) return true;
+                }
+            }
+        }
+        pilhaRecursao[vertice] = false; // Tira da pilha de recursão ao terminar de explorar os vizinhos
+        return false;
     }
 
     // f) Qual é a lista de adjacências do mesmo grafo?
