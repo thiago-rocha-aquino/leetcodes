@@ -18,6 +18,7 @@ public class TeoriaGrafos2 {
                 }
             }
         }
+        System.out.println(matriz.length*n);
         System.out.println("\nLista de Adjacências:");
         imprimirListaAdjacencia(matriz);
         System.out.println("\nMatriz de Adjacências:");
@@ -28,10 +29,10 @@ public class TeoriaGrafos2 {
 
      public static void imprimirListaAdjacencia(int[][] matriz){
         for(int i = 0; i < matriz.length; i++){
-            System.out.print(i+ ": ");
+            System.out.print(i + ": "); // Ou i+1 se preferir base 1 para tudo
             for(int j = 0; j < matriz[i].length; j++){
                 if(matriz[i][j] == 1){
-                    System.out.print(j + " ");
+                    System.out.print(j + " "); // Ou j+1 se preferir base 1 para tudo
                 }
             }
             System.out.println();
