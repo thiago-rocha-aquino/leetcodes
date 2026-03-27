@@ -58,7 +58,7 @@ public class TeoriaGrafos {
         for (int i = 0; i < matriz.length; i++) {
             for (int j = 0; j < matriz[i].length; j++) {
                 if (matriz[i][j] > 0 ) { // Evita imprimir laços (arestas de um vértice para ele mesmo)
-                    System.out.println("Aresta de " + i + " para " + j);
+                    System.out.println("Aresta de " + i + " para " + j + " com peso " + matriz[i][j]);
                 }
             }
         }
